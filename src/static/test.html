@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Server</title>
+</head>
+<body>
+    <h1>Test Server Registration</h1>
+    <div id="results"></div>
+    
+    <script>
+    async function testRegistration() {
+        const resultsDiv = document.getElementById('results');
+        
+        try {
+            // 1. First, get current activities
+            console.log('1. Getting initial activities...');
+            let response = await fetch('/activities');
+            let activities = await response.json();
+            resultsDiv.innerHTML += '<h3>Initial Chess Club participants:</h3>';
+            resultsDiv.innerHTML += '<p>' + JSON.stringify(activities['Chess Club'].participants) + '</p>';
+            
+            // 2. Register a new participant
+            console.log('2. Registering new participant...');
+            response = await fetch('/activities/Chess%20Club/signup?email=test@mergington.edu', {
+                method: 'POST'
+            });
+            const registerResult = await response.json();
+            resultsDiv.innerHTML += '<h3>Registration result:</h3>';
+            resultsDiv.innerHTML += '<p>' + JSON.stringify(registerResult) + '</p>';
+            
+            // 3. Get activities again to see if the change is reflected
+            console.log('3. Getting activities after registration...');
+            response = await fetch('/activities');
+            activities = await response.json();
+            resultsDiv.innerHTML += '<h3>Chess Club participants after registration:</h3>';
+            resultsDiv.innerHTML += '<p>' + JSON.stringify(activities['Chess Club'].participants) + '</p>';
+            
+        } catch (error) {
+            resultsDiv.innerHTML += '<p style="color: red;">Error: ' + error.message + '</p>';
+        }
+    }
+    
+    // Run the test when the page loads
+    window.addEventListener('load', testRegistration);
+    </script>
+</body>
+</html>
